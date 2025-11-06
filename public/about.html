@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>About Talia Hannani</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 50%, #FFD1DC 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+        position: relative;
+        overflow-y: auto;
+      }
+
+      /* Navigation Menu */
+      nav {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1000;
+        animation: fadeInDown 0.8s ease-out;
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .menu {
+        display: flex;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(10px);
+        padding: 6px 12px;
+        border-radius: 30px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .menu a {
+        color: #d63384;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .menu a:hover {
+        background: rgba(255, 255, 255, 0.6);
+        transform: translateY(-2px);
+      }
+
+      .menu a.active {
+        background: rgba(255, 255, 255, 0.7);
+      }
+
+      /* Animated background bubbles */
+      .bubble {
+        position: fixed;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        animation: float 15s infinite ease-in-out;
+        pointer-events: none;
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0) translateX(0);
+          opacity: 0;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          transform: translateY(-100vh) translateX(50px);
+          opacity: 0;
+        }
+      }
+
+      .container {
+        max-width: 700px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 30px;
+        padding: 50px 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        z-index: 10;
+        animation: fadeInUp 0.8s ease-out;
+        position: relative;
+        margin-top: 70px;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        color: #d63384;
+        margin-bottom: 30px;
+        text-align: center;
+        font-weight: 700;
+      }
+
+      .facts-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .fact-item {
+        padding: 20px;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, rgba(255, 182, 193, 0.3) 0%, rgba(255, 192, 203, 0.3) 100%);
+        border-radius: 15px;
+        border-left: 4px solid #FF69B4;
+        transition: all 0.3s ease;
+        animation: slideIn 0.6s ease-out backwards;
+      }
+
+      .fact-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .fact-item:nth-child(1) { animation-delay: 0.1s; }
+      .fact-item:nth-child(2) { animation-delay: 0.2s; }
+      .fact-item:nth-child(3) { animation-delay: 0.3s; }
+      .fact-item:nth-child(4) { animation-delay: 0.4s; }
+      .fact-item:nth-child(5) { animation-delay: 0.5s; }
+      .fact-item:nth-child(6) { animation-delay: 0.6s; }
+      .fact-item:nth-child(7) { animation-delay: 0.7s; }
+
+      .fact-label {
+        font-weight: 600;
+        color: #d63384;
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .fact-value {
+        color: #333;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      /* Photo Section */
+      .photo-section {
+        margin-top: 40px;
+        text-align: center;
+        animation: fadeInUp 0.8s ease-out 0.7s backwards;
+      }
+
+      .photo-container {
+        position: relative;
+        display: inline-block;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-width: 100%;
+        transition: transform 0.3s ease;
+      }
+
+      .photo-container:hover {
+        transform: scale(1.02);
+      }
+
+      .photo-container img {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+        display: block;
+        border-radius: 20px;
+      }
+
+      .photo-caption {
+        margin-top: 15px;
+        color: #d63384;
+        font-size: 1rem;
+        font-weight: 600;
+        font-style: italic;
+      }
+
+      .back-button {
+        display: inline-block;
+        margin-top: 30px;
+        padding: 12px 30px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 25px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .back-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .back-button:active {
+        transform: translateY(0);
+      }
+
+      .button-container {
+        text-align: center;
+      }
+
+      /* Remove back button since we have menu now */
+      .back-button {
+        display: none;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 35px 25px;
+          margin-top: 70px;
+        }
+        h1 {
+          font-size: 2rem;
+        }
+        .fact-label {
+          font-size: 1rem;
+        }
+        nav {
+          top: 10px;
+          left: 10px;
+        }
+        .menu {
+          gap: 6px;
+          padding: 5px 10px;
+        }
+        .menu a {
+          font-size: 0.75rem;
+          padding: 5px 10px;
+        }
+        .photo-container img {
+          max-width: 100%;
+        }
+        .photo-caption {
+          font-size: 0.9rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Menu -->
+    <nav>
+      <div class="menu">
+        <a href="index.html">Home</a>
+        <a href="about.html" class="active">About</a>
+      </div>
+    </nav>
+
+    <!-- Animated background bubbles -->
+    <div class="bubble" style="width: 80px; height: 80px; left: 10%; animation-delay: 0s;"></div>
+    <div class="bubble" style="width: 120px; height: 120px; left: 20%; animation-delay: 2s;"></div>
+    <div class="bubble" style="width: 60px; height: 60px; left: 35%; animation-delay: 4s;"></div>
+    <div class="bubble" style="width: 100px; height: 100px; left: 50%; animation-delay: 1s;"></div>
+    <div class="bubble" style="width: 90px; height: 90px; left: 65%; animation-delay: 3s;"></div>
+    <div class="bubble" style="width: 70px; height: 70px; left: 80%; animation-delay: 5s;"></div>
+    <div class="bubble" style="width: 110px; height: 110px; left: 90%; animation-delay: 2.5s;"></div>
+
+    <div class="container">
+      <h1>Here are some fun facts about me</h1>
+      <ul class="facts-list">
+        <li class="fact-item">
+          <span class="fact-label">Birthday:</span>
+          <span class="fact-value">July 23, 2008</span>
+        </li>
+        <li class="fact-item">
+          <span class="fact-label">Favorite Food:</span>
+          <span class="fact-value">Smash burgers, sushi, and pink sauce pasta</span>
+        </li>
+        <li class="fact-item">
+          <span class="fact-label">Favorite Season:</span>
+          <span class="fact-value">Spring</span>
+        </li>
+        <li class="fact-item">
+          <span class="fact-label">Favorite Subject:</span>
+          <span class="fact-value">Math</span>
+        </li>
+        <li class="fact-item">
+          <span class="fact-label">Favorite Music Artist:</span>
+          <span class="fact-value">Taylor Swift</span>
+        </li>
+        <li class="fact-item">
+          <span class="fact-label">Favorite Sport:</span>
+          <span class="fact-value">Basketball</span>
+        </li>
+        <li class="fact-item">
+          <span class="fact-label">Favorite Color:</span>
+          <span class="fact-value">Pink</span>
+        </li>
+      </ul>
+
+      <div class="photo-section">
+        <div class="photo-container">
+          <img src="IMG_3603.jpeg" alt="Talia and Hunter the Australian Labradoodle">
+        </div>
+        <div class="photo-caption">Me and Hunter, my Australian Labradoodle</div>
+      </div>
+    </div>
+  </body>
+</html>

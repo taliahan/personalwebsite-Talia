@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Talia Hannani</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 50%, #FFD1DC 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Navigation Menu */
+      nav {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1000;
+        animation: fadeInDown 0.8s ease-out;
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .menu {
+        display: flex;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(10px);
+        padding: 6px 12px;
+        border-radius: 30px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .menu a {
+        color: #d63384;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .menu a:hover {
+        background: rgba(255, 255, 255, 0.6);
+        transform: translateY(-2px);
+      }
+
+      .menu a.active {
+        background: rgba(255, 255, 255, 0.7);
+      }
+
+      /* Animated background bubbles */
+      .bubble {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        animation: float 15s infinite ease-in-out;
+        pointer-events: none;
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0) translateX(0);
+          opacity: 0;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          transform: translateY(-100vh) translateX(50px);
+          opacity: 0;
+        }
+      }
+
+      .container {
+        text-align: center;
+        z-index: 10;
+        animation: fadeInUp 1s ease-out;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h1 {
+        font-size: 4.5rem;
+        font-weight: 700;
+        color: #d63384;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 20px rgba(255, 255, 255, 0.5);
+        letter-spacing: -1px;
+        animation: glow 2s ease-in-out infinite alternate;
+      }
+
+      @keyframes glow {
+        from {
+          text-shadow: 2px 2px 20px rgba(255, 255, 255, 0.5),
+                       0 0 20px rgba(214, 51, 132, 0.3);
+        }
+        to {
+          text-shadow: 2px 2px 20px rgba(255, 255, 255, 0.5),
+                       0 0 30px rgba(214, 51, 132, 0.5),
+                       0 0 40px rgba(214, 51, 132, 0.3);
+        }
+      }
+
+      .button {
+        display: inline-block;
+        padding: 18px 40px;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #d63384;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 50px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 32px rgba(214, 51, 132, 0.2);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+      }
+
+      .button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 40px rgba(214, 51, 132, 0.3);
+        border-color: rgba(255, 255, 255, 1);
+        background: rgba(255, 255, 255, 0.8);
+      }
+
+      .button:hover::before {
+        width: 300px;
+        height: 300px;
+      }
+
+      .button:active {
+        transform: translateY(-1px);
+      }
+
+      .button span {
+        position: relative;
+        z-index: 1;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 3rem;
+        }
+        .button {
+          font-size: 1.1rem;
+          padding: 15px 30px;
+        }
+        nav {
+          top: 10px;
+          left: 10px;
+        }
+        .menu {
+          gap: 6px;
+          padding: 5px 10px;
+        }
+        .menu a {
+          font-size: 0.75rem;
+          padding: 5px 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Menu -->
+    <nav>
+      <div class="menu">
+        <a href="index.html" class="active">Home</a>
+        <a href="about.html">About</a>
+      </div>
+    </nav>
+
+    <!-- Animated background bubbles -->
+    <div class="bubble" style="width: 80px; height: 80px; left: 10%; animation-delay: 0s;"></div>
+    <div class="bubble" style="width: 120px; height: 120px; left: 20%; animation-delay: 2s;"></div>
+    <div class="bubble" style="width: 60px; height: 60px; left: 35%; animation-delay: 4s;"></div>
+    <div class="bubble" style="width: 100px; height: 100px; left: 50%; animation-delay: 1s;"></div>
+    <div class="bubble" style="width: 90px; height: 90px; left: 65%; animation-delay: 3s;"></div>
+    <div class="bubble" style="width: 70px; height: 70px; left: 80%; animation-delay: 5s;"></div>
+    <div class="bubble" style="width: 110px; height: 110px; left: 90%; animation-delay: 2.5s;"></div>
+
+    <div class="container">
+      <h1>Talia Hannani</h1>
+      <a href="about.html" class="button">
+        <span>Learn More About Me!</span>
+      </a>
+    </div>
+  </body>
+</html>
