@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Position, Distance, and Displacement</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation Menu -->
+  <nav>
+    <div class="menu">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="distance.html" class="active">Distance</a>
+    </div>
+  </nav>
+  
+  <div class="header-section">
+    <h1>Understanding Distance vs. Displacement</h1>
+    <div class="explanation-box">
+      <p><strong>Distance</strong> is the total path an object travels, while <strong>displacement</strong> is how far it ends up from where it started in a straight line.</p>
+      <ul class="explanation-list">
+        <li><strong>Distance</strong> is always positive and counts every twist and turn</li>
+        <li><strong>Displacement</strong> only depends on the starting and ending positions (and can have direction)</li>
+      </ul>
+    </div>
+    
+    <div class="instructions-box">
+      <p><strong>Instructions:</strong></p>
+      <p>Click where you would like to set your starting point.</p>
+      <p>Click additional points to create a path.</p>
+      <p>Press Play to watch the object move along the path.</p>
+      <p>Watch how Distance increases with every step, while Displacement only depends on where you are relative to the start.</p>
+      <p>Try making loops or returning to the start — notice Distance stays large but Displacement becomes small or zero.</p>
+    </div>
+  </div>
+  
+  <div class="container">
+    <!-- Left Panel: Controls -->
+    <div class="controls-panel">
+      <h2>Controls</h2>
+      
+      <div class="control-group">
+        <button id="playPauseBtn" class="btn-primary">Play</button>
+      </div>
+      
+      <div class="control-group">
+        <button id="clearBtn" class="btn-secondary">Clear Path</button>
+      </div>
+      
+      <div class="control-group">
+        <label for="speedSlider">Speed: <span id="speedValue">100</span> px/s</label>
+        <input type="range" id="speedSlider" min="10" max="500" value="100" step="10">
+      </div>
+    </div>
+    
+    <!-- Right Panel: Canvas and Display -->
+    <div class="canvas-display-wrapper">
+      <div class="canvas-panel">
+        <canvas id="canvas" width="800" height="600"></canvas>
+      </div>
+      
+      <!-- Display Panel -->
+      <div class="display-panel-wrapper">
+        <div class="display-panel">
+        <h3 class="display-section-title">Current Position</h3>
+        <div class="display-item">
+          <span class="label">Position (x, y):</span>
+          <span class="value" id="positionValue">(0, 0)</span>
+        </div>
+        
+        <h3 class="display-section-title">Distance</h3>
+        <div class="display-item">
+          <span class="label">Total Distance Traveled:</span>
+          <span class="value" id="distanceValue">0 px</span>
+        </div>
+        
+        <h3 class="display-section-title">Displacement</h3>
+        <div class="display-row">
+          <div class="display-item">
+            <span class="label">Δx:</span>
+            <span class="value" id="deltaXValue">0 px</span>
+          </div>
+          <div class="display-item">
+            <span class="label">Δy:</span>
+            <span class="value" id="deltaYValue">0 px</span>
+          </div>
+        </div>
+        
+        <div class="display-row">
+          <div class="display-item">
+            <span class="label">Magnitude |Δr|:</span>
+            <span class="value" id="displacementMagValue">0 px</span>
+          </div>
+          <div class="display-item">
+            <span class="label">Direction θ:</span>
+            <span class="value" id="displacementDirValue">0°</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
+
