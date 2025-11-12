@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cars Collection - Talia Hannani</title>
+    <!-- Firebase SDK -->
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+      import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+      // Firebase Configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyA5HShms_T215rDyJQiA2UpM6ckg4jpifA",
+        authDomain: "personalwebsite-talia.firebaseapp.com",
+        projectId: "personalwebsite-talia",
+        storageBucket: "personalwebsite-talia.firebasestorage.app",
+        messagingSenderId: "589110842484",
+        appId: "1:589110842484:web:4536f655ed2aab3d372d21",
+        measurementId: "G-YENKXHRDM6"
+      };
+
+      // Initialize Firebase
+      let db = null;
+      try {
+        // Check if config is valid
+        if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
+          console.error('Firebase config not set. Please update the firebaseConfig object in cars.html with your actual Firebase credentials.');
+          window.db = null;
+        } else {
+          const app = initializeApp(firebaseConfig);
+          db = getFirestore(app);
+          window.db = db;
+          console.log('Firebase initialized successfully');
+        }
+      } catch (error) {
+        console.error('Error initializing Firebase:', error);
+        window.db = null;
+      }
+    </script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 50%, #FFD1DC 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
+        position: relative;
+        overflow-y: auto;
+      }
+
+      /* Navigation Menu */
+      nav {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1000;
+        animation: fadeInDown 0.8s ease-out;
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .menu {
+        display: flex;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(10px);
+        padding: 6px 12px;
+        border-radius: 30px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .menu a {
+        color: #d63384;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .menu a:hover {
+        background: rgba(255, 255, 255, 0.6);
+        transform: translateY(-2px);
+      }
+
+      .menu a.active {
+        background: rgba(255, 255, 255, 0.7);
+      }
+
+      /* Animated background bubbles */
+      .bubble {
+        position: fixed;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        animation: float 15s infinite ease-in-out;
+        pointer-events: none;
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0) translateX(0);
+          opacity: 0;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          transform: translateY(-100vh) translateX(50px);
+          opacity: 0;
+        }
+      }
+
+      .container {
+        max-width: 1000px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 30px;
+        padding: 50px 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        z-index: 10;
+        animation: fadeInUp 0.8s ease-out;
+        position: relative;
+        margin-top: 70px;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        color: #d63384;
+        margin-bottom: 30px;
+        text-align: center;
+        font-weight: 700;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #d63384;
+        font-size: 1.2rem;
+      }
+
+      .error {
+        text-align: center;
+        padding: 40px;
+        color: #d63384;
+        font-size: 1.2rem;
+        background: rgba(255, 182, 193, 0.3);
+        border-radius: 15px;
+        border-left: 4px solid #FF69B4;
+      }
+
+      .cars-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+        margin-top: 30px;
+      }
+
+      .car-card {
+        background: linear-gradient(135deg, rgba(255, 182, 193, 0.3) 0%, rgba(255, 192, 203, 0.3) 100%);
+        border-radius: 20px;
+        padding: 25px;
+        border-left: 4px solid #FF69B4;
+        transition: all 0.3s ease;
+        animation: slideIn 0.6s ease-out backwards;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .car-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(255, 105, 180, 0.3);
+      }
+
+      .document-id {
+        font-size: 0.85rem;
+        color: #999;
+        font-weight: 500;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(214, 51, 132, 0.2);
+        font-family: 'Courier New', monospace;
+      }
+
+      .document-id-label {
+        color: #d63384;
+        font-weight: 600;
+        margin-right: 5px;
+      }
+
+      .delete-button {
+        margin-top: 15px;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        width: 100%;
+      }
+
+      .delete-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+      }
+
+      .delete-button:active {
+        transform: translateY(0);
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .car-card:nth-child(1) { animation-delay: 0.1s; }
+      .car-card:nth-child(2) { animation-delay: 0.2s; }
+      .car-card:nth-child(3) { animation-delay: 0.3s; }
+      .car-card:nth-child(4) { animation-delay: 0.4s; }
+      .car-card:nth-child(5) { animation-delay: 0.5s; }
+      .car-card:nth-child(6) { animation-delay: 0.6s; }
+      .car-card:nth-child(7) { animation-delay: 0.7s; }
+      .car-card:nth-child(8) { animation-delay: 0.8s; }
+
+      .car-field {
+        margin-bottom: 15px;
+      }
+
+      .car-field:last-child {
+        margin-bottom: 0;
+      }
+
+      .car-label {
+        font-weight: 600;
+        color: #d63384;
+        font-size: 0.95rem;
+        margin-bottom: 5px;
+        display: block;
+      }
+
+      .car-value {
+        color: #333;
+        font-size: 1rem;
+        line-height: 1.5;
+        word-wrap: break-word;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #d63384;
+      }
+
+      .empty-state h2 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+      }
+
+      .empty-state p {
+        font-size: 1.1rem;
+        opacity: 0.8;
+      }
+
+      /* Add Car Button */
+      .add-car-button {
+        display: inline-block;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(135deg, #d63384 0%, #FF69B4 100%);
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(214, 51, 132, 0.3);
+        margin-bottom: 30px;
+      }
+
+      .add-car-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(214, 51, 132, 0.4);
+      }
+
+      .add-car-button:active {
+        transform: translateY(0);
+      }
+
+      .button-container {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .modal {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-radius: 30px;
+        padding: 40px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease;
+        position: relative;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .modal-header h2 {
+        font-size: 2rem;
+        color: #d63384;
+        margin: 0;
+      }
+
+      .close-button {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #d63384;
+        cursor: pointer;
+        padding: 0;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
+
+      .close-button:hover {
+        background: rgba(214, 51, 132, 0.1);
+        transform: rotate(90deg);
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        color: #d63384;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid rgba(214, 51, 132, 0.2);
+        border-radius: 15px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.8);
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #d63384;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.1);
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+      }
+
+      .btn-primary {
+        flex: 1;
+        padding: 15px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(135deg, #d63384 0%, #FF69B4 100%);
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(214, 51, 132, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(214, 51, 132, 0.4);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-secondary {
+        flex: 1;
+        padding: 15px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #d63384;
+        background: rgba(255, 255, 255, 0.8);
+        border: 2px solid #d63384;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn-secondary:hover {
+        background: rgba(214, 51, 132, 0.1);
+      }
+
+      .success-message {
+        background: rgba(76, 175, 80, 0.1);
+        color: #4caf50;
+        padding: 15px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        border-left: 4px solid #4caf50;
+        display: none;
+      }
+
+      .success-message.show {
+        display: block;
+        animation: slideIn 0.3s ease;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 35px 25px;
+          margin-top: 70px;
+        }
+        h1 {
+          font-size: 2rem;
+        }
+        .cars-grid {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+        .modal {
+          padding: 30px 20px;
+          width: 95%;
+        }
+        .modal-header h2 {
+          font-size: 1.5rem;
+        }
+        .add-car-button {
+          padding: 12px 25px;
+          font-size: 1rem;
+        }
+        nav {
+          top: 10px;
+          left: 10px;
+        }
+        .menu {
+          gap: 6px;
+          padding: 5px 10px;
+        }
+        .menu a {
+          font-size: 0.75rem;
+          padding: 5px 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation Menu -->
+    <nav>
+      <div class="menu">
+        <a href="./index.html">Home</a>
+        <a href="./about.html">About</a>
+        <a href="./distance.html">Distance</a>
+        <a href="./cars.html" class="active">Cars</a>
+      </div>
+    </nav>
+
+    <!-- Animated background bubbles -->
+    <div class="bubble" style="width: 80px; height: 80px; left: 10%; animation-delay: 0s;"></div>
+    <div class="bubble" style="width: 120px; height: 120px; left: 20%; animation-delay: 2s;"></div>
+    <div class="bubble" style="width: 60px; height: 60px; left: 35%; animation-delay: 4s;"></div>
+    <div class="bubble" style="width: 100px; height: 100px; left: 50%; animation-delay: 1s;"></div>
+    <div class="bubble" style="width: 90px; height: 90px; left: 65%; animation-delay: 3s;"></div>
+    <div class="bubble" style="width: 70px; height: 70px; left: 80%; animation-delay: 5s;"></div>
+    <div class="bubble" style="width: 110px; height: 110px; left: 90%; animation-delay: 2.5s;"></div>
+
+    <div class="container">
+      <h1>My Cars Collection</h1>
+      <div class="button-container">
+        <button class="add-car-button" id="addCarBtn">+ Add New Car</button>
+      </div>
+      <div id="loading" class="loading">Loading cars...</div>
+      <div id="error" class="error" style="display: none;"></div>
+      <div id="carsContainer" class="cars-grid" style="display: none;"></div>
+    </div>
+
+    <!-- Add Car Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Add New Car</h2>
+          <button class="close-button" id="closeModal">&times;</button>
+        </div>
+        <div class="success-message" id="successMessage">
+          Car added successfully! The list will refresh automatically.
+        </div>
+        <form id="addCarForm">
+          <div class="form-group">
+            <label for="make">Make *</label>
+            <input type="text" id="make" name="make" required placeholder="e.g., Toyota">
+          </div>
+          <div class="form-group">
+            <label for="model">Model *</label>
+            <input type="text" id="model" name="model" required placeholder="e.g., Camry">
+          </div>
+          <div class="form-group">
+            <label for="year">Year *</label>
+            <input type="number" id="year" name="year" required placeholder="e.g., 2023" min="1900" max="2100">
+          </div>
+          <div class="form-group">
+            <label for="color">Color</label>
+            <input type="text" id="color" name="color" placeholder="e.g., Red">
+          </div>
+          <div class="form-group">
+            <label for="price">Price</label>
+            <input type="number" id="price" name="price" placeholder="e.g., 25000" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" placeholder="Additional details about the car..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+            <button type="submit" class="btn-primary" id="saveBtn">Save Car</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script type="module">
+      import { collection, getDocs, doc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+      // Function to create document ID from make and model
+      function createDocumentId(make, model) {
+        // Combine make and model, remove special characters, convert to lowercase
+        const id = `${make} ${model}`
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+          .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+          .replace(/\s/g, ' '); // Keep single spaces
+        return id;
+      }
+
+      // Modal functionality
+      const modalOverlay = document.getElementById('modalOverlay');
+      const addCarBtn = document.getElementById('addCarBtn');
+      const closeModalBtn = document.getElementById('closeModal');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const addCarForm = document.getElementById('addCarForm');
+      const successMessage = document.getElementById('successMessage');
+
+      // Open modal
+      addCarBtn.addEventListener('click', () => {
+        modalOverlay.classList.add('active');
+        addCarForm.reset();
+        successMessage.classList.remove('show');
+      });
+
+      // Close modal
+      function closeModal() {
+        modalOverlay.classList.remove('active');
+        addCarForm.reset();
+        successMessage.classList.remove('show');
+      }
+
+      closeModalBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+
+      // Close modal when clicking outside
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+          closeModal();
+        }
+      });
+
+      // Handle form submission
+      addCarForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const saveBtn = document.getElementById('saveBtn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+
+        try {
+          // Wait for Firebase to be ready
+          let attempts = 0;
+          while (!window.db && attempts < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+          }
+
+          if (!window.db) {
+            throw new Error('Firebase not initialized');
+          }
+
+          // Get form data
+          const formData = new FormData(addCarForm);
+          const carData = {};
+          let make = '';
+          let model = '';
+
+          // Only include fields that have values
+          for (const [key, value] of formData.entries()) {
+            if (value.trim() !== '') {
+              // Convert numeric fields
+              if (key === 'year' || key === 'price') {
+                carData[key] = parseFloat(value);
+              } else {
+                carData[key] = value.trim();
+              }
+              
+              // Store make and model for document ID
+              if (key === 'make') {
+                make = value.trim();
+              }
+              if (key === 'model') {
+                model = value.trim();
+              }
+            }
+          }
+
+          // Validate that make and model are provided
+          if (!make || !model) {
+            throw new Error('Make and Model are required to create a document ID');
+          }
+
+          // Create document ID from make and model
+          const documentId = createDocumentId(make, model);
+
+          // Add car to Firestore with custom document ID
+          const carsCollection = collection(window.db, 'Cars');
+          const carDocRef = doc(carsCollection, documentId);
+          await setDoc(carDocRef, carData);
+
+          // Show success message
+          successMessage.classList.add('show');
+
+          // Refresh the car list after a short delay
+          setTimeout(() => {
+            closeModal();
+            loadCars();
+          }, 1500);
+
+        } catch (error) {
+          console.error('Error adding car:', error);
+          alert(`Error adding car: ${error.message}`);
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Car';
+        }
+      });
+
+      // Delete car function (made available globally for onclick handler)
+      window.deleteCar = async function(carId) {
+        // Prompt for password
+        const password = prompt('Enter password to delete this car:');
+        
+        // Check if password is correct
+        if (password !== '67') {
+          alert('Incorrect password. Deletion cancelled.');
+          return;
+        }
+
+        // Confirm deletion after password is verified
+        if (!confirm(`Are you sure you want to delete this car? (Document ID: ${carId})`)) {
+          return;
+        }
+
+        try {
+          // Wait for Firebase to be ready
+          let attempts = 0;
+          while (!window.db && attempts < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+          }
+
+          if (!window.db) {
+            throw new Error('Firebase not initialized');
+          }
+
+          // Delete the car document
+          const carsCollection = collection(window.db, 'Cars');
+          const carDocRef = doc(carsCollection, carId);
+          await deleteDoc(carDocRef);
+
+          // Refresh the car list
+          loadCars();
+        } catch (error) {
+          console.error('Error deleting car:', error);
+          alert(`Error deleting car: ${error.message}`);
+        }
+      };
+
+      // Wait for db to be initialized
+      async function loadCars() {
+        const loadingEl = document.getElementById('loading');
+        const errorEl = document.getElementById('error');
+        const containerEl = document.getElementById('carsContainer');
+
+        try {
+          // Wait for Firebase to initialize (with longer timeout)
+          let attempts = 0;
+          const maxAttempts = 100; // 10 seconds total
+          while (!window.db && attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+          }
+
+          if (!window.db) {
+            // Check if config is the issue
+            const errorMsg = 'Firebase not initialized. Please check your Firebase configuration in cars.html. Make sure you have replaced YOUR_API_KEY, YOUR_MESSAGING_SENDER_ID, and YOUR_APP_ID with your actual Firebase credentials from the Firebase Console.';
+            throw new Error(errorMsg);
+          }
+
+          console.log('Fetching cars from Firestore...');
+          
+          // Get all documents from the "Cars" collection
+          const carsCollection = collection(window.db, 'Cars');
+          const carsSnapshot = await getDocs(carsCollection);
+
+          loadingEl.style.display = 'none';
+
+          if (carsSnapshot.empty) {
+            containerEl.innerHTML = `
+              <div class="empty-state">
+                <h2>No cars found</h2>
+                <p>Your cars collection is empty. Add some cars to your Firestore database!</p>
+              </div>
+            `;
+            containerEl.style.display = 'block';
+            return;
+          }
+
+          // Display each car
+          const cars = [];
+          carsSnapshot.forEach((doc) => {
+            const carData = doc.data();
+            cars.push({ id: doc.id, ...carData });
+          });
+
+          console.log(`Found ${cars.length} car(s)`);
+
+          // Render cars
+          containerEl.innerHTML = cars.map((car, index) => {
+            const fields = Object.keys(car);
+            return `
+              <div class="car-card" style="animation-delay: ${(index % 8) * 0.1}s">
+                <div class="document-id">
+                  <span class="document-id-label">Document ID:</span>${car.id}
+                </div>
+                ${fields.filter(field => field !== 'id').map(field => `
+                  <div class="car-field">
+                    <span class="car-label">${field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ')}:</span>
+                    <span class="car-value">${car[field]}</span>
+                  </div>
+                `).join('')}
+                <button class="delete-button" onclick="deleteCar('${car.id}')">Delete Car</button>
+              </div>
+            `;
+          }).join('');
+
+          containerEl.style.display = 'grid';
+        } catch (error) {
+          console.error('Error loading cars:', error);
+          loadingEl.style.display = 'none';
+          
+          // Provide helpful error message
+          let errorMessage = error.message;
+          if (error.code === 'permission-denied') {
+            errorMessage = 'Permission denied. Please check your Firestore security rules.';
+          } else if (error.code === 'failed-precondition') {
+            errorMessage = 'Firestore is not enabled. Please enable it in your Firebase Console.';
+          } else if (error.message.includes('YOUR_API_KEY')) {
+            errorMessage = 'Firebase configuration is missing. Please update the firebaseConfig object in cars.html with your actual Firebase credentials from Firebase Console.';
+          }
+          
+          errorEl.innerHTML = `
+            <strong>Error loading cars:</strong><br>
+            ${errorMessage}<br><br>
+            <small>Check the browser console (F12) for more details.</small>
+          `;
+          errorEl.style.display = 'block';
+        }
+      }
+
+      // Wait for DOM and Firebase to be ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          setTimeout(loadCars, 500); // Give Firebase a moment to initialize
+        });
+      } else {
+        setTimeout(loadCars, 500);
+      }
+    </script>
+  </body>
+</html>
+
